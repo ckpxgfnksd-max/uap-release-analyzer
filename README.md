@@ -69,6 +69,26 @@ python scripts/analyze.py      ~/Documents/UFO/release_01/
 python scripts/build_report.py ~/Documents/UFO/release_01/
 ```
 
+## Example dataset
+
+The May 2026 war.gov "PURSUE" release this skill was tuned against is mirrored at [`ckpxgfnksd-max/uap-release-01`](https://github.com/ckpxgfnksd-max/uap-release-01) (Git LFS, ~2.4 GB / 132 files / 4,157 PDF pages). Clone it as your `release_01/` to reproduce the eval scoreboard:
+
+```bash
+git lfs install   # one-time
+git clone https://github.com/ckpxgfnksd-max/uap-release-01.git ~/Documents/UFO/release_01
+python scripts/run_all.py ~/Documents/UFO/release_01
+```
+
+Or fetch only the buckets you care about (e.g., the text-bearing DOW mission reports):
+
+```bash
+GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/ckpxgfnksd-max/uap-release-01.git ~/Documents/UFO/release_01
+cd ~/Documents/UFO/release_01
+git lfs pull --include "dow-*"
+```
+
+Video is not mirrored — link to <https://www.war.gov/UFO/> for any video material.
+
 ## Eval scoreboard (iteration-1)
 
 | Eval | with skill | baseline | Δ |
