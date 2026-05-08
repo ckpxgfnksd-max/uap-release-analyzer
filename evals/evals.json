@@ -1,0 +1,75 @@
+{
+  "skill_name": "uap-release-analyzer",
+  "evals": [
+    {
+      "id": 0,
+      "name": "full-tranche-walkthrough",
+      "prompt": "I just downloaded the May 2026 war.gov UFO release into ~/Documents/Claude/Projects/UFO/release_01/. There are 132 files (about 2.5GB, mix of PDFs and images). Can you run a full analysis on them? I want an inventory, the main themes, who's named, where the activity is, redaction patterns, and a written report I can read in ten minutes. Save everything in the UFO folder.",
+      "expected_output": "An inventory.csv with one row per file, an analytics/ folder containing top_terms.csv / terms_by_agency.csv / entities.json / per_file_digest.csv / cross_doc.json, and a REPORT.md that follows the 11-section structure from SKILL.md. The report should call out the FBI / DOW / NASA / DOS / NARA buckets, surface CENTCOM as the dominant location cluster, note that ~79 of 132 files are scanned (no text layer), and explain the (b)(1) / (b)(6) / NOFORN redaction pattern.",
+      "files": [],
+      "expectations": [
+        "An inventory.csv was created at ~/Documents/Claude/Projects/UFO/release_01/inventory.csv with one row per file (132 data rows + header)",
+        "An analytics/ directory was created containing all five files: top_terms.csv, terms_by_agency.csv, entities.json, per_file_digest.csv, cross_doc.json",
+        "A REPORT.md was created at ~/Documents/Claude/Projects/UFO/release_01/REPORT.md",
+        "REPORT.md follows the 11-section structure from SKILL.md (Inventory, What's actually in the release, Where activity is concentrated, Phenomena terminology, Agency cross-references, Year clusters, Redactions, Notable individual files, Cross-document patterns, What's missing/caveats, Files in this analysis)",
+        "REPORT.md's agency rollup names all five buckets: DOW, FBI, NASA, DOS, NARA",
+        "REPORT.md surfaces CENTCOM as the top location cluster (or otherwise calls it out as dominant)",
+        "REPORT.md's 'What's missing' or caveats section explicitly notes that a large portion of files (around 79, or roughly 60%) are scanned with no text layer and would need OCR for content-level analysis",
+        "REPORT.md cites (b)(1) and NOFORN as top redaction patterns and connects them to modern DOW/operational reporting",
+        "The agent invoked the bundled scripts (run_all.py or inventory.py + extract_text.py + analyze.py + build_report.py) rather than reimplementing the pipeline ad hoc",
+        "The agent did NOT attempt to OCR the scanned PDFs — that's flagged as a follow-up, not auto-run"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "single-file-summary",
+      "prompt": "Take one PDF — dow-uap-d27-mission-report-united-arab-emirates-october-2023.pdf, in ~/Documents/Claude/Projects/UFO/release_01/ — and tell me what's in it. Top terms, locations mentioned, redaction markers, and a 2-3 sentence summary. Don't run a full corpus analysis, just this one file.",
+      "expected_output": "A focused per-file digest: filename, agency=DOW, top tokens, top locations (UAE / Middle East), top redaction markers (heavy (b)(1) and NOFORN — this is the most-redacted file in the tranche), and a short prose summary that mentions it's a CENTCOM mission report. Should NOT run the full pipeline on the whole release.",
+      "files": [],
+      "expectations": [
+        "The output focuses on the single file dow-uap-d27-mission-report-united-arab-emirates-october-2023.pdf",
+        "The output classifies the file's agency as DOW (Department of War)",
+        "The output identifies UAE / United Arab Emirates and CENTCOM (or Middle East) as top locations in this file",
+        "The output names (b)(1) and NOFORN (and ideally SECRET//NOFORN) among the top redaction markers in this file",
+        "The output provides a 2-3 sentence prose summary that frames the file as a CENTCOM/DOW mission report on a UAP encounter in the UAE in October 2023",
+        "The output includes a top-terms list (locations, phenomena vocabulary, or tokens) drawn from the file rather than generic guesses",
+        "The agent did NOT regenerate a full-corpus REPORT.md — no 11-section corpus report or full inventory.csv covering 132 files was produced as part of this task",
+        "The agent did NOT auto-OCR the file (it has a text layer; OCR would be wasted work)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "scanned-tranche-honest-caveats",
+      "prompt": "Look at just the FBI files in the release at ~/Documents/Claude/Projects/UFO/release_01/. (Filenames starting with 65_hs1, fbi-photo-, usper-, serial, or 2024-04-30.) What can you actually tell me about them?",
+      "expected_output": "Should clearly state that the bulk of the FBI material is scanned with no text layer (the 62-HQ-83894 sections), so the analyzer can only do a metadata-level summary: file count, page counts, types (PDF case-file sections vs PNG infrared photos), and what each file's filename suggests it is. Should explicitly note OCR is required for content-level analysis, and offer it as a follow-up rather than silently failing or pretending to extract content that isn't there.",
+      "files": [],
+      "expectations": [
+        "The output states explicitly that the bulk of the FBI material is scanned and has no text layer",
+        "The output offers OCR (Tesseract or equivalent) as a follow-up step the user can choose to run, rather than auto-running it",
+        "The output does NOT fabricate content-level claims about the scanned PDFs (no invented quotes, named individuals from inside scanned docs, specific incident details that would require OCR to know)",
+        "The output gives a metadata-level summary: file count for the FBI bucket, total page count, and the breakdown between PDF case-file sections and PNG/JPG infrared photos",
+        "The output references the 62-HQ-83894 case-file structure (the 65_hs1-* serial naming) and groups files by serial / section",
+        "The output uses the bundled scripts or the existing inventory.csv / per_file_digest.csv rather than re-walking the FBI files from scratch",
+        "The output names at least a couple of FBI files specifically (e.g., a serial or sub_a section) so the user can verify the count is real",
+        "The agent did NOT try to extract text where there is none — empty .txt files are reported as scanned, not as missing data"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "fresh-tranche-bootstrap",
+      "prompt": "When the war.gov page drops release 02 in a few weeks, what's the fastest way for me to get from 'just downloaded the new tranche' to 'a written report I can read'?",
+      "expected_output": "Concrete instructions: (1) put files in ~/Documents/Claude/Projects/UFO/release_02/ (2) run scripts/run_all.py from the skill on the release_root (3) review REPORT.md. Should also mention diffing inventory.csv across releases to surface what's new vs. release_01, and reference the war_gov_quirks.md doc for the scrape-side concerns (pagination, blob URLs, ~17% of records served via inline viewer).",
+      "expectations": [
+        "The output instructs the user to place the new tranche under a sibling directory like ~/Documents/Claude/Projects/UFO/release_02/ (or release_NN/ subdir convention)",
+        "The output instructs running scripts/run_all.py with the release root as the argument (or equivalently the four scripts inventory.py / extract_text.py / analyze.py / build_report.py in order)",
+        "The output instructs the user to review REPORT.md as the deliverable",
+        "The output mentions diffing inventory.csv across releases (release_01 vs release_02) to surface what's new",
+        "The output references war_gov_quirks.md (or the scraping-side concerns it documents: pagination, blob URLs, inline-viewer records) for the scrape side of the workflow",
+        "The output mentions the OTHER bucket / unfamiliar prefix workflow — that new prefixes should be added to references/agency_vocab.md rather than hard-coded into the scripts",
+        "The output does NOT actually run the analyzer against a release_02 directory that doesn't exist (no fabricated REPORT.md for release_02)",
+        "The instructions are concrete enough that a non-technical user could copy-paste them"
+      ],
+      "files": []
+    }
+  ]
+}
