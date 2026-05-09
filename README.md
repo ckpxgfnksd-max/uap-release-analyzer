@@ -71,7 +71,7 @@ python scripts/build_report.py ~/Documents/UFO/release_01/
 
 ## Example dataset
 
-The May 2026 war.gov "PURSUE" release this skill was tuned against is mirrored at [`ckpxgfnksd-max/uap-release-01`](https://github.com/ckpxgfnksd-max/uap-release-01) (Git LFS, ~2.4 GB / 132 files / 4,157 PDF pages). Clone it as your `release_01/` to reproduce the eval scoreboard:
+The May 2026 war.gov "PURSUE" release this skill was tuned against is mirrored at [`ckpxgfnksd-max/uap-release-01`](https://github.com/ckpxgfnksd-max/uap-release-01) (Git LFS, **~3.7 GB / 160 files**: 118 PDFs, 28 MP4 videos, 14 images). Clone it as your `release_01/` to reproduce the eval scoreboard:
 
 ```bash
 git lfs install   # one-time
@@ -79,15 +79,18 @@ git clone https://github.com/ckpxgfnksd-max/uap-release-01.git ~/Documents/UFO/r
 python scripts/run_all.py ~/Documents/UFO/release_01
 ```
 
-Or fetch only the buckets you care about (e.g., the text-bearing DOW mission reports):
+Or fetch only the buckets you care about:
 
 ```bash
 GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/ckpxgfnksd-max/uap-release-01.git ~/Documents/UFO/release_01
 cd ~/Documents/UFO/release_01
-git lfs pull --include "dow-*"
+
+git lfs pull --include "dow-uap-*.pdf"     # text-bearing DOW mission report PDFs
+git lfs pull --include "dow-uap-pr*.mp4"   # 27 DOW Unresolved-Report videos (1.3 GB)
+git lfs pull --include "65_hs1*"           # heavy FBI scanned sections
 ```
 
-Video is not mirrored — link to <https://www.war.gov/UFO/> for any video material.
+The 28 videos in the corpus aren't analyzed by this skill — `analyze.py` only reads PDF text. They're mirrored for completeness so future video-aware analysis (e.g., scene-classification or transcript extraction) has a stable input set. The skill flags any non-PDF file as `(image file — vision analysis required)` or similar in `per_file_digest.csv` and skips it for text analytics.
 
 ## Eval scoreboard (iteration-1)
 
